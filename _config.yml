@@ -26,8 +26,8 @@ github_username:  Tony-Xiong
 
 # Build settings
 markdown: kramdown
-# theme: minima
-theme: jekyll-theme-slate
+theme: minima
+# theme: jekyll-theme-slate
 plugins:
   - jekyll-feed
 
