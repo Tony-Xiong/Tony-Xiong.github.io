@@ -11,7 +11,8 @@ categories: jekyll update
 * git log
 * git reflog
 * git reset --hard commit_ID
-* git status 查看commit之前的改动
+* git status 
+> 查看commit之前的改动
 * git diff a_version
 * git checkout -- filename
 > drop change
