@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "learn git command"
-date: 2018-08-07 13:07:00 +0800
+date: 2017-08-07 13:07:00 +0800
 categories: jekyll update
 ---
 
