@@ -1,0 +1,152 @@
+---
+layout: post
+title: "scala 入门 一"
+date: 2018-10-18 10:21:00 +0800
+categories: jekyll update
+---
+
+## scala 简介
+1. Java 方言之一，java的方言除了scala还有kotlin、groovy、clojure等。
+2. 运行在JVM之上
+3. scala和kotlin、groovy、clojure一样是多范式编程语言，支持函数式编程
+4. scala常用领域是并发编程
+5. 大数据框架 spark是用scala实现的，play框架支持scala
+6. scala是静态语言
+7. scala在国外的使用和学习环境，明显好于国内。毕竟，tweet等知名网站是使用scala实现的。国内通过scala实现的，知名的网站没有呢。
+
+## scala入门建议前置学习的内容
+- 函数式编程思维的学习
+学习java的各种方言之前，都应该学习函数式编程。适当的使用函数式编程是减少代码量的同时，使代码逻辑更清晰的一个很重要的手段。而且，只有使用函数式并使用java方言提供的高级特征，才能快速高效的完成编程任务。
+
+- java使用熟练
+- 对java的多线程相关知识最好比较熟悉
+
+## 学习笔记（1）
+
+### 1.1字面量、值、变量、类型
+- 字面量（literal）
+这个概念，不太好理解。字面量就是指这个量本身,比如字面量3。也就是指3. 再比如 string类型的字面量"ABC", 这个"ABC" 通过字来描述。后面还是涉及到函数字面量等和字面量有关的概念。
+- 值（value）
+值是不可变的、有类型的存储单元。可以在定义的时候指定数据，不能重新赋值
+
+```kotlin
+val a : Int = 1
+```
+- 变量（variable）
+变量是可变的、有类型的存储单元。可以重新赋值。
+```kotlin
+var b : boolean = true
+b = false
+```
+- 类型
+指所处理数据的种类
+类型这一块，和java差的不是很多，不过所有的类型并不是java的基础类型。核心类型的都是以大写字母开头的（对，这些类型在java中本身就是一个类）
+*核心的数据类型有*：Byte Short Int Long Float Double 等
+**Unit**类是一个空类型，和java里面的**void**类似。**Unit**的字面量是()，空的小括号，没有任何内容。
+
+==下图是Scala类型层次体系==
+```mermaid
+graph TD
+    AnyVal--> Any
+    AnyRef--> Any
+    Nothing --> Null
+    Null --> Classes
+    Classes --> AnyRef
+    Collections --> AnyRef
+    String --> AnyRef
+    NumericType --> AnyVal
+    Char --> AnyVal
+    Boolean --> AnyVal
+    
+```
+***常用类型操作***
+操作名 | 示例 | 描述
+----|----|----
+asInstanceOf[`type`] | 5.asInstanceOf[Long]|将一个类型的值转换成指定类型的值
+getClass|7.getClass|返回一个值的类型
+isInstanceOf|(5.0).isInstanceOf[Float]|如果这个值有给定的类型，则返回true
+hashCode|“A”.hashCode|返回这个值的哈希码
+to`<type>` |20.toByte;47.toFloat|类型转换
+toString|(3-5).toString|转换成字符串
+
+- scala的类型定义是写在 `  ：`之后的，写法和java有很大的区别。
+下面是值a赋值的示例
+`val a : Int = 1 `
+val声明a这个变量是值，Int是变量a的类型。a的数据内容是1
+  下面是方法b的定义示例
+  `def b(a:Int) : Int = a+1`
+  方法b是一个加1函数，返回的是参数a+1的结果的一个函数。
+  def是定义这是一个方法，（）里面是参数a，类型Int，（）之后的：后面，是定义函数的返回类型是Int，方法过程是a+1。
+  
+  scala的语法和java的很不一样，因为本人先学了kotlin和groovy的，所以觉得scala的语法结果可能还好，没有很习惯的感觉。
+
+### 1.2 表达式和条件式
+#### 表达式
+```
+scala> 1 + 1
+res0: Int = 2
+```
+res0是解释器自动创建的变量名称，用来指代表达式的计算结果。它是Int类型，值为2。
+
+Scala中（几乎）一切都是表达式。
+
+**代码块**
+用大括号｛｝包裹起来的代码是代码块。注意，scala里面的｛｝和java里面的｛｝在使用是，其实是有区别的。scala里面的函数定义，并不是一定需要｛｝的，如果代码只有一条语句，或者写在一行之类，那么｛｝其实是可以省略的。下面是例子
+`def a：String = “hello world！”`
+`def b():String = {"hello world!"}`
+例子中的两个function，a和b，功能上是等效的，而且都是正确的写法。
+
+>题外话，scala是出了名的难学，很大一个原因就是scala特别的自由。本人是非常喜欢scala的语法的，非常的灵活，没有太多一定要遵守的格式，而且函数可以变得非常的简洁。这个对提升开发效率是非常有用的一个点。而且，简短的代码又非常有利于代码的review。
+#### 条件式
+**if...else表达式块**
+scala的if else 和java的if else还是比较像的，但是**scala的if...else不是语法结构块，scala的if...else可以用在赋值表达式上面**`这点非常的重要，可以简化代码`
+```kotlin
+//这个表达式返回值是Unit,即空值。
+var result = if(false) "when true return this"
+```
+java的等效代码
+```java
+if(false){
+String result = "when true return this";
+}else{
+String result = null;
+}
+```
+这样一对比，是不是觉得scala的代码简洁太多了。
+
+**匹配表达式**
+match是scala里面类似于java里“switch”语句的存在，但是无论是scala的match还是kotlin里面的when，都比java里面的“switch”强大太多了。
+这里只讲基本写法，match的强大只能在使用中去体会，很难很快说明match的强大之处
+```kotlin
+val a =1
+val b=2
+val big = a>b match{
+case true : a
+case false : b
+}
+```
+匹配表达式有很多的使用技巧，包括*模式替换*、*值绑定*、*模式哨位*、*指定模式变量*。这些也都是scala语言，语法灵活的一个体现。
+
+#### 循环
+scala支持的循环有**for循环**以及**while和do/while循环**
+scala的for循环比起java也要简洁很多。
+下面是一个7次循环的例子
+```scala
+for (x <- 1 to 7 ) {println(s"Day $x")}
+```
+这个循环的结果就是打印如下内容
+```
+Day 1
+Day 2
+Day 3
+Day 4
+Day 5
+Day 6
+Day 7
+```
+很短对不对，i变量都省了。
+下面基于这个，再介绍Scala中的yield。
+```scala
+for (x <- 1 to 7 ) yield {s"Day $x:"}
+```
+这样写，好处就是简洁……
