@@ -1,0 +1,33 @@
+---
+layout: post
+title: "scala 入门 （2）"
+date: 2019-02-02 23:00:00 +0800
+categories: jekyll update
+---
+
+## 学习笔记 （二）
+
+### class、object 和 Trait 以及半生对象
+- scala 中 class关键字是用来定义类的
+
+> scala中的类中，是没有静态方法和静态字段。class是可以有构造器的
+
+- scala 中 object关键字是用来定义Scala中的对象的
+
+> Scala中class和object是有区别的，java中class是可以包含静态方法和静态字段的，java的class等于是Scala中class和object的混合。在Scala中，object可以拥有静态方法和静态字段，但是不能有构造器。
+
+- 伴生对象
+
+> 在同一个包下面，命名相同的object和class都存在的话，这两个object和class互为伴生对象
+
+- scala中的Triat是一种特殊的概念
+
+> 首先我们可以将Trait作为类似于接口的功能来使用，如果只是在trait定义抽象方法的话，那就能当接口的功能来使用。
+但是，Trait中是可以定义抽象方法，就和java中的抽象方法一样，只要不给初方法的具体实现即可。
+scala中没有implement关键字，class可以使用extends关键字继承trait
+类继承trait后，必须实现其中的抽象方法，实现的使用不需要使用override关键字。
+**Scala不支持对类进行多继承，但是支持多重继承trait，使用with关键字即可**
+
+- case class
+
+> case class 是样例类，和class类似，但是有些区别，方便用于模式匹配
