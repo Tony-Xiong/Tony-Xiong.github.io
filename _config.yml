@@ -14,12 +14,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: XYZ
-email: xyzxyjx04@tom.com
+email: freexyxyz@gmail.com
 # Write an awesome description for your new site here. You can edit this
 # line in _config.yml. It will appear in your document head meta (for
 # Google search results) and in your feed.xml site description.
 description: > # this means to ignore newlines until "baseurl:"
-  慵懒的舟舟同学。发现编程很好玩，就开始开开心心玩了，希望能玩到老。欢迎加好友。
+  慵懒的舟舟。毕业N年后才转做码农，大龄程序员。喜欢研究各种提高效率的开发方式。喜欢折腾些看起来没啥用的技术。English is so so.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: freexyxyz
