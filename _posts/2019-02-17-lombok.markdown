@@ -474,8 +474,7 @@ By default, the topic (or name) of the logger will be the class name of the clas
 For example: @XSlf4j(topic="reporting").
 
 ```java
-
- import lombok.extern.java.Log;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Log
@@ -504,7 +503,6 @@ public class LogExampleCategory {
 ```
 等效代码
 ```java
-
  public class LogExample {
   private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(LogExample.class.getName());
   
