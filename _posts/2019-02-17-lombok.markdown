@@ -1,0 +1,658 @@
+---
+layout: post
+title: "Lombok 快速入门指南"
+date: 2019-02-12 20:55:00 +0800
+categories: jekyll update
+---
+
+# Lombok 快速入门指南
+
+## 前言
+
+- 知道Lombok其实很久了。因为之前的项目一直没用到过，也不是项目的架构或者技术方面的负责人，所以也一直没使用上Lombok。在自己玩玩的项目里，长期使用kotlin或者scala或者groovy，根本也不会想到用Lombok。所以之前虽然知道有这个东西，确一直没用过。这次有个新项目，本人也能做些技术方面的主，就打算用下，并写篇快速指南记录下。
+
+## Lombok介绍
+
+Lombok是一个Java工具库，使用Lombok可以通过注解的形式来帮助开发消除Java的冗长的代码，达到代码简化的效果。是提高java开发效率的很有用的一个工具。
+
+## Lombok注解
+
+### val
+
+推导类型，生成final类
+
+```java
+val example = new ArrayList<String>();
+val foo = example.get(0);
+```
+等效代码
+```java
+final ArrayList<String> example = new ArrayList<String>();
+final String foo = example.get(0);
+```
+
+### var
+
+推导类型
+
+```java
+var example = new ArrayList<String>();
+var foo = example.get(0);
+```
+等效代码
+```java
+ArrayList<String> example = new ArrayList<String>();
+String foo = example.get(0);
+```
+
+
+### @NoArgsConstructor, @RequiredArgsConstructor and @AllArgsConstructor
+
+生成构造方法
+
+```java
+import lombok.*;
+@RequiredArgsConstructor(staticName = "of")
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public class ConstructorExample<T> {
+  private int x, y;
+  @NonNull private T description;
+  
+  @NoArgsConstructor
+  public static class NoArgsExample {
+    @NonNull private String field;
+  }
+}
+```
+等效代码
+```java
+public class ConstructorExample<T> {
+  private int x, y;
+  @NonNull private T description;
+  
+  private ConstructorExample(T description) {
+    if (description == null) throw new NullPointerException("description");
+    this.description = description;
+  }
+  
+  public static <T> ConstructorExample<T> of(T description) {
+    return new ConstructorExample<T>(description);
+  }
+  
+  @java.beans.ConstructorProperties({"x", "y", "description"})
+  protected ConstructorExample(int x, int y, T description) {
+    if (description == null) throw new NullPointerException("description");
+    this.x = x;
+    this.y = y;
+    this.description = description;
+  }
+  
+  public static class NoArgsExample {
+    @NonNull private String field;
+    
+    public NoArgsExample() {
+    }
+  }
+}
+```
+
+### @Value
+
+生成不可变的数据类
+```java
+import lombok.*;
+
+@Value public class ValueExample {
+  String name;
+  @Wither(AccessLevel.PACKAGE) @NonFinal int age;
+  double score;
+  protected String[] tags;
+  
+  @ToString(includeFieldNames=true)
+  @Value(staticConstructor="of")
+  public static class Exercise<T> {
+    String name;
+    T value;
+  }
+}
+```
+等效代码
+```java
+import java.util.Arrays;
+
+public final class ValueExample {
+  private final String name;
+  private int age;
+  private final double score;
+  protected final String[] tags;
+  
+  @java.beans.ConstructorProperties({"name", "age", "score", "tags"})
+  public ValueExample(String name, int age, double score, String[] tags) {
+    this.name = name;
+    this.age = age;
+    this.score = score;
+    this.tags = tags;
+  }
+  
+  public String getName() {
+    return this.name;
+  }
+  
+  public int getAge() {
+    return this.age;
+  }
+  
+  public double getScore() {
+    return this.score;
+  }
+  
+  public String[] getTags() {
+    return this.tags;
+  }
+  
+  @java.lang.Override
+  public boolean equals(Object o) {
+    if (o == this) return true;
+    if (!(o instanceof ValueExample)) return false;
+    final ValueExample other = (ValueExample)o;
+    final Object this$name = this.getName();
+    final Object other$name = other.getName();
+    if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
+    if (this.getAge() != other.getAge()) return false;
+    if (Double.compare(this.getScore(), other.getScore()) != 0) return false;
+    if (!Arrays.deepEquals(this.getTags(), other.getTags())) return false;
+    return true;
+  }
+  
+  @java.lang.Override
+  public int hashCode() {
+    final int PRIME = 59;
+    int result = 1;
+    final Object $name = this.getName();
+    result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+    result = result * PRIME + this.getAge();
+    final long $score = Double.doubleToLongBits(this.getScore());
+    result = result * PRIME + (int)($score >>> 32 ^ $score);
+    result = result * PRIME + Arrays.deepHashCode(this.getTags());
+    return result;
+  }
+  
+  @java.lang.Override
+  public String toString() {
+    return "ValueExample(name=" + getName() + ", age=" + getAge() + ", score=" + getScore() + ", tags=" + Arrays.deepToString(getTags()) + ")";
+  }
+  
+  ValueExample withAge(int age) {
+    return this.age == age ? this : new ValueExample(name, age, score, tags);
+  }
+  
+  public static final class Exercise<T> {
+    private final String name;
+    private final T value;
+    
+    private Exercise(String name, T value) {
+      this.name = name;
+      this.value = value;
+    }
+    
+    public static <T> Exercise<T> of(String name, T value) {
+      return new Exercise<T>(name, value);
+    }
+    
+    public String getName() {
+      return this.name;
+    }
+    
+    public T getValue() {
+      return this.value;
+    }
+    
+    @java.lang.Override
+    public boolean equals(Object o) {
+      if (o == this) return true;
+      if (!(o instanceof ValueExample.Exercise)) return false;
+      final Exercise<?> other = (Exercise<?>)o;
+      final Object this$name = this.getName();
+      final Object other$name = other.getName();
+      if (this$name == null ? other$name != null : !this$name.equals(other$name)) return false;
+      final Object this$value = this.getValue();
+      final Object other$value = other.getValue();
+      if (this$value == null ? other$value != null : !this$value.equals(other$value)) return false;
+      return true;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+      final int PRIME = 59;
+      int result = 1;
+      final Object $name = this.getName();
+      result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+      final Object $value = this.getValue();
+      result = result * PRIME + ($value == null ? 43 : $value.hashCode());
+      return result;
+    }
+    
+    @java.lang.Override
+    public String toString() {
+      return "ValueExample.Exercise(name=" + getName() + ", value=" + getValue() + ")";
+    }
+  }
+```
+
+
+### @Builder
+
+生成构建器
+```java
+import lombok.Builder;
+import lombok.Singular;
+import java.util.Set;
+
+@Builder
+public class BuilderExample {
+  @Builder.Default private long created = System.currentTimeMillis();
+  private String name;
+  private int age;
+  @Singular private Set<String> occupations;
+}
+```
+等效代码
+```java
+import java.util.Set;
+
+public class BuilderExample {
+  private long created;
+  private String name;
+  private int age;
+  private Set<String> occupations;
+  
+  BuilderExample(String name, int age, Set<String> occupations) {
+    this.name = name;
+    this.age = age;
+    this.occupations = occupations;
+  }
+  
+  private static long $default$created() {
+    return System.currentTimeMillis();
+  }
+  
+  public static BuilderExampleBuilder builder() {
+    return new BuilderExampleBuilder();
+  }
+  
+  public static class BuilderExampleBuilder {
+    private long created;
+    private boolean created$set;
+    private String name;
+    private int age;
+    private java.util.ArrayList<String> occupations;
+    
+    BuilderExampleBuilder() {
+    }
+    
+    public BuilderExampleBuilder created(long created) {
+      this.created = created;
+      this.created$set = true;
+      return this;
+    }
+    
+    public BuilderExampleBuilder name(String name) {
+      this.name = name;
+      return this;
+    }
+    
+    public BuilderExampleBuilder age(int age) {
+      this.age = age;
+      return this;
+    }
+    
+    public BuilderExampleBuilder occupation(String occupation) {
+      if (this.occupations == null) {
+        this.occupations = new java.util.ArrayList<String>();
+      }
+      
+      this.occupations.add(occupation);
+      return this;
+    }
+    
+    public BuilderExampleBuilder occupations(Collection<? extends String> occupations) {
+      if (this.occupations == null) {
+        this.occupations = new java.util.ArrayList<String>();
+      }
+
+      this.occupations.addAll(occupations);
+      return this;
+    }
+    
+    public BuilderExampleBuilder clearOccupations() {
+      if (this.occupations != null) {
+        this.occupations.clear();
+      }
+      
+      return this;
+    }
+
+    public BuilderExample build() {
+      // complicated switch statement to produce a compact properly sized immutable set omitted.
+      Set<String> occupations = ...;
+      return new BuilderExample(created$set ? created : BuilderExample.$default$created(), name, age, occupations);
+    }
+    
+    @java.lang.Override
+    public String toString() {
+      return "BuilderExample.BuilderExampleBuilder(created = " + this.created + ", name = " + this.name + ", age = " + this.age + ", occupations = " + this.occupations + ")";
+    }
+  }
+}
+```
+
+### @Getter @Setter
+
+使用@Getter/@Setter注解，此注解在属性上，可以为相应的属性自动生成Getter/Setter方法
+
+```java
+@Getter @Setter private boolean employed = true;
+@Setter(AccessLevel.PROTECTED) private String name;
+```
+等效于如下代码
+```java
+private boolean employed = true;
+private String name;
+
+public boolean isEmployed() {
+    return employed;
+}
+
+public void setEmployed(final boolean employed) {
+    this.employed = employed;
+}
+
+protected void setName(final String name) {
+    this.name = name;
+}
+```
+
+### @NonNull
+
+该注解用在属性或构造器上，Lombok会生成一个非空的声明，可用于校验参数，能帮助避免空指针。
+
+```java
+@Getter @Setter @NonNull
+private List<Person> members;
+```
+等效代码
+```java
+@NonNull
+private List<Person> members;
+
+public Family(@NonNull final List<Person> members) {
+    if (members == null) throw new java.lang.NullPointerException("members");
+    this.members = members;
+}
+    
+@NonNull
+public List<Person> getMembers() {
+    return members;
+}
+
+public void setMembers(@NonNull final List<Person> members) {
+    if (members == null) throw new java.lang.NullPointerException("members");
+    this.members = members;
+}
+```
+
+### @ToString
+
+类使用@ToString注解，Lombok会生成一个toString()方法，默认情况下，会输出类名、所有属性（会按照属性定义顺序），用逗号来分割。
+
+通过将includeFieldNames参数设为true，就能明确的输出toString()属性。这一点是不是有点绕口，通过代码来看会更清晰些。
+
+```java
+@ToString(callSuper=true,exclude="someExcludedField")
+public class Foo extends Bar {
+    private boolean someBoolean = true;
+    private String someStringField;
+    private float someExcludedField;
+}
+```
+等效代码
+```java
+public class Foo extends Bar {
+    private boolean someBoolean = true;
+    private String someStringField;
+    private float someExcludedField;
+    
+    @java.lang.Override
+    public java.lang.String toString() {
+        return "Foo(super=" + super.toString() +
+            ", someBoolean=" + someBoolean +
+            ", someStringField=" + someStringField + ")";
+    }
+}
+```
+
+### Log
+
+### @EqualsAndHashCode
+
+默认情况下，会使用所有非静态（non-static）和非瞬态（non-transient）属性来生成equals和hasCode，也能通过exclude注解来排除一些属性。
+
+```java
+@EqualsAndHashCode(callSuper=true,exclude={"address","city","state","zip"})
+public class Person extends SentientBeing {
+    enum Gender { Male, Female }
+
+    @NonNull private String name;
+    @NonNull private Gender gender;
+    
+    private String ssn;
+    private String address;
+    private String city;
+    private String state;
+    private String zip;
+}
+```
+等效代码
+```java
+public class Person extends SentientBeing {
+    
+    enum Gender {
+        /*public static final*/ Male /* = new Gender() */,
+        /*public static final*/ Female /* = new Gender() */;
+    }
+    @NonNull
+    private String name;
+    @NonNull
+    private Gender gender;
+    private String ssn;
+    private String address;
+    private String city;
+    private String state;
+    private String zip;
+    
+    @java.lang.Override
+    public boolean equals(final java.lang.Object o) {
+        if (o == this) return true;
+        if (o == null) return false;
+        if (o.getClass() != this.getClass()) return false;
+        if (!super.equals(o)) return false;
+        final Person other = (Person)o;
+        if (this.name == null ? other.name != null : !this.name.equals(other.name)) return false;
+        if (this.gender == null ? other.gender != null : !this.gender.equals(other.gender)) return false;
+        if (this.ssn == null ? other.ssn != null : !this.ssn.equals(other.ssn)) return false;
+        return true;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = result * PRIME + super.hashCode();
+        result = result * PRIME + (this.name == null ? 0 : this.name.hashCode());
+        result = result * PRIME + (this.gender == null ? 0 : this.gender.hashCode());
+        result = result * PRIME + (this.ssn == null ? 0 : this.ssn.hashCode());
+        return result;
+    }
+}
+```
+
+### @Data
+
+@Data集合了@ToString、@EqualsAndHashCode、@Getter/@Setter、@RequiredArgsConstructor的所有特性
+
+```java
+@Data(staticConstructor="of")
+public class Company {
+    private final Person founder;
+    private String name;
+    private List<Person> employees;
+}
+```
+等效代码
+```java
+public class Company {
+    private final Person founder;
+    private String name;
+    private List<Person> employees;
+    
+    private Company(final Person founder) {
+        this.founder = founder;
+    }
+    
+    public static Company of(final Person founder) {
+        return new Company(founder);
+    }
+    
+    public Person getFounder() {
+        return founder;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(final String name) {
+        this.name = name;
+    }
+    
+    public List<Person> getEmployees() {
+        return employees;
+    }
+    
+    public void setEmployees(final List<Person> employees) {
+        this.employees = employees;
+    }
+    
+    @java.lang.Override
+    public boolean equals(final java.lang.Object o) {
+        if (o == this) return true;
+        if (o == null) return false;
+        if (o.getClass() != this.getClass()) return false;
+        final Company other = (Company)o;
+        if (this.founder == null ? other.founder != null : !this.founder.equals(other.founder)) return false;
+        if (this.name == null ? other.name != null : !this.name.equals(other.name)) return false;
+        if (this.employees == null ? other.employees != null : !this.employees.equals(other.employees)) return false;
+        return true;
+    }
+    
+    @java.lang.Override
+    public int hashCode() {
+        final int PRIME = 31;
+        int result = 1;
+        result = result * PRIME + (this.founder == null ? 0 : this.founder.hashCode());
+        result = result * PRIME + (this.name == null ? 0 : this.name.hashCode());
+        result = result * PRIME + (this.employees == null ? 0 : this.employees.hashCode());
+        return result;
+    }
+    
+    @java.lang.Override
+    public java.lang.String toString() {
+        return "Company(founder=" + founder + ", name=" + name + ", employees=" + employees + ")";
+    }
+}
+```
+
+### @Cleanup
+
+该注解能帮助我们自动调用close()方法，很大的简化了代码。
+
+```java
+public void testCleanUp() {
+    try {
+        @Cleanup ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        baos.write(new byte[] {'Y','e','s'});
+        System.out.println(baos.toString());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+```
+等效代码
+```java
+public void testCleanUp() {
+    try {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            baos.write(new byte[]{'Y', 'e', 's'});
+            System.out.println(baos.toString());
+        } finally {
+            baos.close();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+```
+
+### @Synchronized
+
+通过注解，快速生成同步锁
+
+```java
+private DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
+
+@Synchronized
+public String synchronizedFormat(Date date) {
+    return format.format(date);
+}
+```
+等效代码
+```java
+private final java.lang.Object $lock = new java.lang.Object[0];
+private DateFormat format = new SimpleDateFormat("MM-dd-YYYY");
+
+public String synchronizedFormat(Date date) {
+    synchronized ($lock) {
+        return format.format(date);
+    }
+}
+```
+
+### @SneakyThrows
+
+```java
+@SneakyThrows
+public void testSneakyThrows() {
+    throw new IllegalAccessException();
+}
+```
+等效代码
+```java
+public void testSneakyThrows() {
+    try {
+        throw new IllegalAccessException();
+    } catch (java.lang.Throwable $ex) {
+        throw lombok.Lombok.sneakyThrow($ex);
+    }
+}
+```
+
+## 限制和使用注意事项
+
+Lombok现在还无法侦测到超类的构造器。如果你在子类使用@Data注解的时候，并且父类或者更上级的继承类有无参的构造方法时，继承的无参构造方法会被自动生成的无参构造方法所覆盖。这种场景下是不能使用@Data注解的。
+
+## 感想
+
+可以简化java开发，但是如果能用kotlin、groovy、scala之类别的语言，Lombok其实没啥存在的必要。
+Lombok比较合适快速构建标准的getter、setter、toString之类的代码，不过应为现在ide本身就有快速生成这类代码的能力，在企业级开发中，必要性其实不是那么大。
+所以，可以使用。但是真的需要根据项目需要来使用。
