@@ -418,7 +418,7 @@ categories: jekyll update
 
 重写一组从超类继承或者嵌入类内的多态关系，需要指定@AssociationOverride标签
 
-- **@AssociationOverride(name="关联字段", joinColumns=@JoinColumn || joinTable=@JoinTable)**
+- **@AssociationOverride(name="关联字段", joinColumns=@JoinColumn , joinTable=@JoinTable)**
 
 重写从超累继承的或者嵌入类内的多态关系，
 
