@@ -1,0 +1,544 @@
+---
+layout: post
+title: "Hibernate及JPA注解"
+date: 2019-02-22 20:55:00 +0800
+categories: jekyll update
+---
+
+## Hibernate及JPA注解
+
+归纳和总结看到的和用到的spring data jpa 注解
+
+### 一般类注解
+- **@Entity**
+声明实体类
+无属性
+
+- **@Table**
+指定数据库表名
+有三个属性
+1. name 常用，指定表明
+2. catalog 不常用，有些数据库没catalog
+3. schema 不常用
+
+- **@MappedSuperclass**
+将超类的JPA注解传递给子类,使子类能够继承超类的JPA注解
+
+- **@Id**
+声明Id
+- **@GeneratedValues**
+声明自动生成值
+```java
+       //Example 1:
+  
+       @Id
+       @GeneratedValue(strategy=SEQUENCE, generator="CUST_SEQ")
+       @Column(name="CUST_ID")
+       public Long getId() { return id; }
+  
+       //Example 2:
+  
+       @Id
+       @GeneratedValue(strategy=TABLE, generator="CUST_GEN")
+       @Column(name="CUST_ID")
+       Long id;
+```
+- **@GenericGenerator(name = "提供给GeneratedValues注解的名称", strategy = "uuid")**
+声明自动生成器
+
+常用策略(strategy)如下
+    uuid2
+    guid
+    uuid
+    uuid.hex
+    assigned
+    identity
+    select
+    sequence
+    seqhilo
+    increment
+    foreign
+    sequence-indentity
+    enhanced-sequence
+    enhanced-table
+
+- **@Column（name = "自定义字段名"，length = "自定义长度"，nullable = "是否可以空"，unique = "是否唯一"，columnDefinition = "自定义该字段的类型和长度"）**
+声明字段属性
+- **@Basic**
+所有没有定义注解的属性，等价于加上了@Basic
+- **@Transient**
+声明不做数据库映射
+- **@Temporal**
+定义时间类型转换
+
+- **@Cache**
+定义二级缓存策略和缓存范围
+
+- **@Enumerated（"需要定义存入数据库的类型”)**
+使用@Enumerated映射枚举字段，我这里为性别建立了性别的枚举类型，而后面跟上的是存入数据库以String类型存入。
+```java
+     //Example:
+  
+     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
+  
+     public enum SalaryRate {JUNIOR, SENIOR, MANAGER, EXECUTIVE}
+  
+     @Entity public class Employee {
+         public EmployeeStatus getStatus() {...}
+         ...
+         @Enumerated(STRING)
+         public SalaryRate getPayScale() {...}
+         ...
+     }
+   
+```
+
+- **@ElementCollection**
+集合映射，当实体类包含多个相同类型的变量的时候就可以使用@ElementCollection来声明这个变量，而JPA会为此生成两个关联的表。例如一个人有家庭住址，也有单位地址；但是“地址”并不能失去人的存在而存在，所以是一个失去独立性的实体类；所以地址不能映射为一个实体，这时就需要映射为组件，及人的信息里边包含地址。是整体与部分的关系。但由于这个地址可能有多个。比如公司地址、出生地址、家庭地址等。
+
+### 关系类注解
+- **@OneToOne**
+声明一对一关系
+
+```java
+      //Example 1: One-to-one association that maps a foreign key column 外键
+  
+      // On Customer class:
+  
+      @OneToOne(optional=false)
+      @JoinColumn(
+      	name="CUSTREC_ID", unique=true, nullable=false, updatable=false)
+      public CustomerRecord getCustomerRecord() { return customerRecord; }
+  
+      // On CustomerRecord class:
+  
+      @OneToOne(optional=false, mappedBy="customerRecord")
+      public Customer getCustomer() { return customer; }
+  
+  
+      //Example 2: One-to-one association that assumes both the source and target share the same primary key values. 
+  
+      // On Employee class:
+  
+      @Entity
+      public class Employee {
+      	@Id Integer id;
+      
+      	@OneToOne @MapsId
+      	EmployeeInfo info;
+      	...
+      }
+  
+      // On EmployeeInfo class:
+  
+      @Entity
+      public class EmployeeInfo {
+      	@Id Integer id;
+      	...
+      }
+  
+  
+      //Example 3: One-to-one association from an embeddable class to another entity.
+  
+      @Entity
+      public class Employee {
+         @Id int id;
+         @Embedded LocationDetails location;
+         ...
+      }
+  
+      @Embeddable
+      public class LocationDetails {
+         int officeNumber;
+         @OneToOne ParkingSpot parkingSpot;
+         ...
+      }
+  
+      @Entity
+      public class ParkingSpot {
+         @Id int id;
+         String garage;
+         @OneToOne(mappedBy="location.parkingSpot") Employee assignedTo;
+          ... 
+      } 
+  
+```
+
+- **@OneToMany**
+声明一对多关系
+
+```java
+      //Example 1: One-to-Many association using generics
+  
+      // In Customer class:
+  
+      @OneToMany(cascade=ALL, mappedBy="customer")
+      public Set<Order> getOrders() { return orders; }
+  
+      //In Order class:
+  
+      @ManyToOne
+      @JoinColumn(name="CUST_ID", nullable=false)
+      public Customer getCustomer() { return customer; }
+  
+  
+      //Example 2: One-to-Many association without using generics
+  
+      // In Customer class:
+  
+      @OneToMany(targetEntity=com.acme.Order.class, cascade=ALL,
+                  mappedBy="customer")
+      public Set getOrders() { return orders; }
+  
+      // In Order class:
+  
+      @ManyToOne
+      @JoinColumn(name="CUST_ID", nullable=false)
+      public Customer getCustomer() { return customer; }
+  
+  
+      //Example 3: Unidirectional One-to-Many association using a foreign key mapping
+  
+      // In Customer class:
+  
+      @OneToMany(orphanRemoval=true)
+      @JoinColumn(name="CUST_ID") // join column is in table for Order
+      public Set<Order> getOrders() {return orders;}
+      
+```
+
+- **@ManyToOne**
+声明多对一关系
+
+```java
+ //Example 1:
+  
+       @ManyToOne(optional=false) 
+       @JoinColumn(name="CUST_ID", nullable=false, updatable=false)
+       public Customer getCustomer() { return customer; }
+  
+  
+       //Example 2:
+   
+       @Entity
+          public class Employee {
+          @Id int id;
+          @Embedded JobInfo jobInfo;
+          ...
+       }
+  
+       @Embeddable
+          public class JobInfo {
+          String jobDescription; 
+          @ManyToOne ProgramManager pm; // Bidirectional
+       }
+  
+       @Entity
+          public class ProgramManager {
+          @Id int id;
+          @OneToMany(mappedBy="jobInfo.pm")
+          Collection<Employee> manages;
+       }
+  
+```
+
+- **@ManyToMany**
+声明多对多关系
+```java
+ //Example 1:
+  
+      // In Customer class:
+  
+      @ManyToMany
+      @JoinTable(name="CUST_PHONES")
+      public Set<PhoneNumber> getPhones() { return phones; }
+  
+      // In PhoneNumber class:
+  
+      @ManyToMany(mappedBy="phones")
+      public Set<Customer> getCustomers() { return customers; }
+  
+      //Example 2:
+  
+      // In Customer class:
+  
+      @ManyToMany(targetEntity=com.acme.PhoneNumber.class)
+      public Set getPhones() { return phones; }
+  
+      // In PhoneNumber class:
+  
+      @ManyToMany(targetEntity=com.acme.Customer.class, mappedBy="phones")
+      public Set getCustomers() { return customers; }
+  
+      //Example 3:
+  
+      // In Customer class:
+  
+      @ManyToMany
+      @JoinTable(name="CUST_PHONE",
+          joinColumns=
+              @JoinColumn(name="CUST_ID", referencedColumnName="ID"),
+          inverseJoinColumns=
+              @JoinColumn(name="PHONE_ID", referencedColumnName="ID")
+          )
+      public Set<PhoneNumber> getPhones() { return phones; }
+  
+      // In PhoneNumberClass:
+  
+      @ManyToMany(mappedBy="phones")
+      public Set<Customer> getCustomers() { return customers; }
+```
+- **@Embedded**
+声明嵌入关系，嵌入的对象会被拆解成列，并进被嵌入的对象中
+- **@JoinColumn**
+声明关联字段，一般会和其他定义关系的注解一起使用
+```java
+     //Example:
+  
+     @ManyToOne
+     @JoinColumn(name="ADDR_ID")
+     public Address getAddress() { return address; }
+  
+  
+     //Example: unidirectional one-to-many association using a foreign key mapping
+   
+     // In Customer class
+     @OneToMany
+     @JoinColumn(name="CUST_ID") // join column is in table for Order
+     public Set<Order> getOrders() {return orders;}
+```
+- **@JoinTable**
+定义关联表，使用样例如下
+```java
+      @JoinTable(
+          name="CUST_PHONE",
+          joinColumns=
+              @JoinColumn(name="CUST_ID", referencedColumnName="ID"),
+          inverseJoinColumns=
+              @JoinColumn(name="PHONE_ID", referencedColumnName="ID")
+      )
+```
+
+
+- **@Embeddable**
+声明一个java类为可嵌入对象，可嵌入对象不会在数据库中生成表对象
+
+- **@MapsId**
+定义映射id
+```java
+     //Example:
+  
+      // parent entity has simple primary key
+  
+      @Entity
+      public class Employee {
+         @Id long empId;
+         String name;
+         ...
+      } 
+  
+      // dependent entity uses EmbeddedId for composite key
+  
+      @Embeddable
+      public class DependentId {
+         String name;
+         long empid;   // corresponds to primary key type of Employee
+      }
+  
+      @Entity
+      public class Dependent {
+         @EmbeddedId DependentId id;
+          ...
+         @MapsId("empid")  //  maps the empid attribute of embedded id
+         @ManyToOne Employee emp;
+      }
+   
+```
+
+- **@PrimaryKeyJoinColumn**
+声明关联其他表的外键字段
+- **@Inheritance(strategy = InheritanceType)**
+声明实体之间的继承关系
+**<u>可用策略</u>**
+**SINGLE_TABLE 单表**：这个是默认策略，需要配合@DiscriminatorColumn【辨别字段】和@DiscriminatorValue【辨别值】使用
+**TABLE_PER_CLASS 独立表策略**：每个具体的类一个表，继承字段会被映射到子表
+**JOINED 联合子类策略**：继承字段不会被映射到子表，子表主键外键关联父表的id
+
+- **@DiscriminatorColumn(name = "type")**
+声明辨别字段
+- **@DiscriminatorValue("1")**
+声明辨别值
+
+- **@AssociationOverrides**
+重写一组从超类继承或者嵌入类内的多态关系，需要指定@AssociationOverride标签
+- **@AssociationOverride(name="关联字段", joinColumns=@JoinColumn || joinTable=@JoinTable)**
+重写从超累继承的或者嵌入类内的多态关系，
+
+- **@AttributeOverrides**
+
+重写一组@AttributeOverride
+
+- **@AttributeOverride**
+重写继承字段投射数据库的字段名
+```java
+//If AttributeOverride is not specified, the column is mapped the same as in the original mapping.
+      //Example 1:
+  
+      @MappedSuperclass
+      public class Employee {
+          @Id protected Integer id;
+          @Version protected Integer version;
+          protected String address;
+          public Integer getId() { ... }
+          public void setId(Integer id) { ... }
+          public String getAddress() { ... }
+          public void setAddress(String address) { ... }
+      }
+  
+      @Entity
+      @AttributeOverride(name="address", column=@Column(name="ADDR"))
+      public class PartTimeEmployee extends Employee {
+          // address field mapping overridden to ADDR
+          protected Float wage();
+          public Float getHourlyWage() { ... }
+          public void setHourlyWage(Float wage) { ... }
+      }
+   
+  
+      //Example 2:
+  
+      @Embeddable public class Address {
+          protected String street;
+          protected String city;
+          protected String state;
+          @Embedded protected Zipcode zipcode;
+      }
+  
+      @Embeddable public class Zipcode {
+          protected String zip;
+          protected String plusFour;
+      }
+  
+      @Entity public class Customer {
+          @Id protected Integer id;
+          protected String name;
+          @AttributeOverrides({
+              @AttributeOverride(name="state",
+                                 column=@Column(name="ADDR_STATE")),
+              @AttributeOverride(name="zipcode.zip",
+                                 column=@Column(name="ADDR_ZIP"))
+          })
+          @Embedded protected Address address;
+          ...
+      }
+  
+  
+      //Example 3:
+  
+      @Entity public class PropertyRecord {
+          @EmbeddedId PropertyOwner owner;
+          @AttributeOverrides({
+              @AttributeOverride(name="key.street", 
+                                 column=@Column(name="STREET_NAME")),
+              @AttributeOverride(name="value.size", 
+                                 column=@Column(name="SQUARE_FEET")),
+              @AttributeOverride(name="value.tax", 
+                                 column=@Column(name="ASSESSMENT"))
+          })
+         @ElementCollection
+         Map<Address, PropertyInfo> parcels;
+      }
+  
+      @Embeddable public class PropertyInfo {
+          Integer parcelNumber;
+          Integer size;
+          BigDecimal tax;
+      }
+  
+```
+### spring data注解
+- @CreatedBy
+- @CreatedDate
+- @LastModifiedBy
+- @LastModifiedDate
+
+### spring data JPA注解
+
+
+### 校验相关的注解
+
+##### JXR-303 标准
+- **@Null	**
+被注释的元素必须为 null
+- **@NotNull**
+被注释的元素必须不为 null
+- **@AssertTrue**
+被注释的元素必须为 true
+- **@AssertFalse**
+被注释的元素必须为 false
+- **@Min(value)**
+被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+- **@Max(value)**
+被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+- **@DecimalMin(value)**
+被注释的元素必须是一个数字，其值必须大于等于指定的最小值
+- **@DecimalMax(value)**
+被注释的元素必须是一个数字，其值必须小于等于指定的最大值
+- **@Size(max, min)**
+被注释的元素的大小必须在指定的范围内
+- **@Digits (integer, fraction)**
+被注释的元素必须是一个数字，其值必须在可接受的范围内
+- **@Past**
+被注释的元素必须是一个过去的日期
+- **@Future**
+被注释的元素必须是一个将来的日期
+- **@Pattern(value)**
+被注释的元素必须符合指定的正则表达式
+
+##### validation-api 2.0.1 fianl 附加
+
+- **@FutureOrPresent**
+被注释的元素必须是一个将来的日期或者现在
+- **@Negative**
+被注释的元素必须是负数
+- **@NegativeOrZero**
+被注释的元素必须是小于等于0
+- **@NotBlank**
+被注释的元素必须是字符串，并且非空
+- **@NotEmpty**
+被注释的元素是集合对象的元素不为0，即集合不为空，也可以用于字符串不为null
+- **@PastOrPresent**
+被注释的元素必须是一个过去的日期或者现在
+- **@Positive**
+被注释的元素必须是正数
+- **@PositiveOrZero**
+被注释的元素必须是大于0的
+- **@Email**
+被注释的元素必须是邮箱地址
+
+##### Hibernate Validator 6 附加（常用部分）
+
+除了由Bean验证API定义的约束，Hibernate Validator提供一些有用的自定义约束条件如下。
+适用于field/property的约束，只有“scriptassert是class级约束。　　
+- **@CreditCardNumber(ignoreNonDigitCharacters=)**
+这个验证旨在检查用户的错误，而不是信用卡的有效性
+- **@Currency(value=)**
+验证货币单位　　
+- **@EAN**
+检查注释字符序列是一个有效的EAN条码　　
+- **@Length(min=, max=)**　
+被注释的字符串的大小必须在指定的范围内　　
+- **@Range(min=, max=)**　
+被注释的元素必须在合适的范围内　　
+- **@SafeHtml(whitelistType= , additionalTags=, additionalTagsWithAttributes=, baseURI=)**　
+classpath中要有jsoup包　　
+- **@URL(protocol=, host=, port=, regexp=, flags=)**　
+被注释的字符串必须是一个有效的url　　
+- **@ScriptAssert(lang=, script=, alias=, reportOn=)**　　
+要有Java Scripting API
+- **@ISBN**
+- **@CreditCardNumber**
+- **@Mod10Check**
+- **@Mod11Check**
+- **@LuhnCheck**
+- **@SafeHtml**
