@@ -88,9 +88,13 @@ categories: jekyll update
 
 定义时间类型转换
 
-- **@Cache**
+- **@Cache(usage="策略", region="范围", include="all或者non-lazy")**
 
 定义二级缓存策略和缓存范围
+
+- **@BatchSize(size=数字)**
+
+定义分批数据的大小
 
 - **@Enumerated（"需要定义存入数据库的类型”)**
 使用@Enumerated映射枚举字段，我这里为性别建立了性别的枚举类型，而后面跟上的是存入数据库以String类型存入。
