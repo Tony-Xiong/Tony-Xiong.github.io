@@ -3,6 +3,7 @@ layout: post
 title: "scala 入门 （1）"
 date: 2018-10-18 10:21:00 +0800
 categories: jekyll update
+tags: 技术 Scala
 ---
 
 ## scala 简介
