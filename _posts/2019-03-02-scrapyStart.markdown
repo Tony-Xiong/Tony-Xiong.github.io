@@ -2,7 +2,7 @@
 layout: post
 title: scrapy 爬虫入门
 date: 2019-03-02 20:30:00 +0800
-tag: python 技术
+tags: python 技术
 ---
 
 # scrapy 爬虫框架 入门
@@ -82,6 +82,8 @@ https://app.scrapinghub.com/p/26731/job/1/8
 ![架构图](https://image-static.segmentfault.com/8c/59/8c591d54457bb033812a2b0364011e9c_articlex)
 
 #### 处理时序图
+
+![时序图](https://tony-xiong.github.io/assets/img/1.PNG)
 
 ```mermaid
 sequenceDiagram
@@ -181,21 +183,27 @@ class mySpider(scrapy.Spider):
 
 #### 4.保存数据
 
-
 scrapy保存信息的最简单的方法主要有四种，-o 输出指定格式的文件，，命令如下：
 json格式，默认为Unicode编码
+
 ```
 scrapy crawl itcast -o teachers.json
 ```
+
 json lines格式，默认为Unicode编码
+
 ```
 scrapy crawl itcast -o teachers.jsonl
 ```
+
 csv 逗号表达式，可用Excel打开
+
 ```
 scrapy crawl itcast -o teachers.csv
 ```
+
 xml格式
+
 ```
 scrapy crawl itcast -o teachers.xml
 ```
