@@ -32,3 +32,26 @@ scala中没有implement关键字，class可以使用extends关键字继承trait
 - case class
 
 > case class 是样例类，和class类似，但是有些区别，方便用于模式匹配
+
+### 混入（mixin）
+
+当某个特质被用于组合类时，被称为混入。
+
+例子：
+
+```scala
+abstract class A {
+  val message: String
+}
+class B extends A {
+  val message = "I'm an instance of class B"
+}
+trait C extends A {
+  def loudMessage = message.toUpperCase()
+}
+class D extends B with C
+
+val d = new D
+println(d.message)  // I'm an instance of class B
+println(d.loudMessage)  // I'M AN INSTANCE OF CLASS B
+```
