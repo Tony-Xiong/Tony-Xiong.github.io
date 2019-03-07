@@ -8,7 +8,7 @@ tags: 技术 Scala
 
 ## 学习笔记 （二）
 
-### class、object 和 Trait 以及半生对象
+### class、object、Trait 、半生对象和混入
 - scala 中 class关键字是用来定义类的
 
 > scala中的类中，是没有静态方法和静态字段。class是可以有构造器的
