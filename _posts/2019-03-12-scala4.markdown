@@ -10,7 +10,9 @@ tags: 技术 Scala
 
 ### 高阶函数(HIGHER-ORDER FUNCTIONS)
 
-[出处](https://docs.scala-lang.org/zh-cn/tour/higher-order-functions.html)
+**从官方文档应用，手敲了一遍文档。主要是觉得官方文档写的比较好，这块内容又非常的重要，所以引用过来作为第四篇教程**
+
+[官方文档](https://docs.scala-lang.org/zh-cn/tour/higher-order-functions.html)
 
 高阶函数是指使用其他函数作为参数、或者返回一个函数作为结果的函数。在Scala中函数是“一等公民”，所以允许定义高阶函数。这里的术语可能有点让人困惑，我们约定，使用函数值作为参数，或者返回值为函数值的“函数”和“方法”，均称为“高阶函数”。
 
