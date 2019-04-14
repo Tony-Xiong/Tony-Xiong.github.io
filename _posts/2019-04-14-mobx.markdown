@@ -1,0 +1,42 @@
+---
+layout: post
+title: Mobx笔记
+date: 2019-04-08 20:25:00 +0800
+tags: 技术 mobx
+---
+
+
+# mobX
+
+使用mobx可以把对象或者state变为可观测的
+构造一个单向的数据流
+
+mobx的比redux来的更加的简单
+
+能使用ES 7 以上的环境编写的话，主要是使用装饰器来完成程序的改造
+
+
+主要的装饰器有
+
+@observable
+使用在字段前面
+
+@computed
+使用在函数前，函数返回一个observable字段的计算值
+
+@observer
+用来class前
+
+action
+
+任何应用都有动作。动作是任何用来修改状态的东西。 使用MobX你可以在代码中显式地标记出动作所在的位置。 动作可以有助于更好的组织代码。
+
+- action(fn)
+- action(name, fn)
+- @action classMethod() {}
+- @action(name) classMethod () {}
+- @action boundClassMethod = (args) => { body }
+- @action(name) boundClassMethod = (args) => { body }
+- @action.bound classMethod() {}
+
+
