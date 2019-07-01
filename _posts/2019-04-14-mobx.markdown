@@ -5,8 +5,7 @@ date: 2019-04-14 20:25:00 +0800
 tags: 技术 mobx
 ---
 
-
-# mobX
+## mobX
 
 使用mobx可以把对象或者state变为可观测的
 构造一个单向的数据流
@@ -14,7 +13,6 @@ tags: 技术 mobx
 mobx的比redux来的更加的简单
 
 能使用ES 7 以上的环境编写的话，主要是使用装饰器来完成程序的改造
-
 
 主要的装饰器有
 
@@ -38,5 +36,3 @@ action
 - @action boundClassMethod = (args) => { body }
 - @action(name) boundClassMethod = (args) => { body }
 - @action.bound classMethod() {}
-
-

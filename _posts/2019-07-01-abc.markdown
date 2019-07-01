@@ -1,0 +1,111 @@
+---
+layout: post
+title: webpack 学习笔记
+date: 2019-07-01 9:30:00 +0800
+tags: 技术 webpack
+---
+
+## webpack学习手册
+
+> webpack是什么？
+> webpack是JS前端工具，用于js代码打包
+
+## 快速入门
+
+### 关键点（一）安装基础依赖
+
+安装 webpack
+安装 webpack-cli
+可选安装 webpack-dev-server
+
+> npm 方式安装
+> npm install webpack --save-dev 
+> npm install webpack-cli --save-dev
+
+> yarn 方式安装
+> yarn add webpack --dev
+> yarn add webpack-cli --dev
+
+### 关键点（二）webpack常用命令
+
+`webpack` 执行一次开始时的编译
+`webpack -p` 执行一次生成环境的编译（压缩）
+`webpack --watch` 在开发时持续监控增量编译（压缩）
+`webpack -d` 生成SourceMaps
+`webpack --progress` 显示编译进度
+`webpack --colors` 显示静态资源的颜色
+`webpack --sort` 排序命令，具体用法可查阅文档
+`webpack --display` 显示命令，具体用法可查阅文档
+
+### 关键点（三）webpack的配置文件
+
+在最新版本的webpack中，配置文件webpack.config.js就算不存在，打包还是可以运行的。
+但是在实际项目中，配置文件肯定时需要的，实际项目的配置一般都很复杂，需要配置文件。
+
+配置文件存在于项目目录中，命名为webpack.config.js。它是一个js语法结构的配置文件。
+
+**webpack支持commonjs和AMD两种引入写法，也支持ES6的import。**
+
+```js
+
+//前面是引用，或者写的配置对象
+
+module.exports = {
+    devtool: isProduction ? false : 'source-map', //开发工具
+    context: jsSourcePath, 
+    entry: { //入口
+        js: './app.js',
+    },
+    output: {//输出
+        path: buildPath,
+        publicPath: '',
+        filename: 'app-[hash].js',
+    },
+    module: {//加载器相关配置
+        rules,
+    },
+    resolve: {//解决方法相关配置
+        extensions: ['.webpack-loader.js', '.web-loader.js', '.loader.js', '.js', '.jsx', '.less'],
+        modules: [
+        path.resolve(__dirname, 'node_modules'),
+        jsSourcePath,
+        ],
+    },
+    plugins,//插件相关配置
+    externals: {//解决外部引用问题
+        'BMap': 'BMap'
+        },
+    devServer: {//devServer 的相关配置
+        contentBase: isProduction ? buildPath : sourcePath,
+        historyApiFallback: true,
+        port: 3000,
+        compress: isProduction,
+        inline: !isProduction,
+        hot: !isProduction,
+        host: '0.0.0.0',
+        disableHostCheck: true,
+        stats: {
+            assets: true,
+            children: false,
+            chunks: false,
+            hash: false,
+            modules: false,
+            publicPath: false,
+            timings: true,
+            version: false,
+            warnings: true,
+            colors: {
+            green: '\u001b[32m',
+                },
+            },
+        }
+
+
+
+```
+
+## 进阶
+
+### 官方文档
+
+[webpack.js](https://webpack.js.org/concepts)
