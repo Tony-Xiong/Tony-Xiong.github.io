@@ -3,7 +3,7 @@ layout: post
 title: "Lombok 快速入门指南"
 date: 2019-02-17 20:55:00 +0800
 categories: jekyll update
-tags: 技术 Lombok
+tags: 技术 java
 ---
 
 # Lombok 快速入门指南

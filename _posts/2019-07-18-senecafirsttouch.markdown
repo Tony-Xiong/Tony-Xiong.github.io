@@ -2,7 +2,7 @@
 layout: post
 title: seneca 初探
 date: 2019-07-18 12:00:00 +0800
-tag: 技术 js
+tags: 技术 js
 ---
 
 ## 概况

@@ -3,7 +3,7 @@ layout: post
 title: "learn git command"
 date: 2017-08-07 13:07:00 +0800
 categories: jekyll update
-tags: 技术
+tags: 技术 git
 ---
 
 * git init

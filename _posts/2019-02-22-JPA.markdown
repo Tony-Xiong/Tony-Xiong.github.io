@@ -3,7 +3,7 @@ layout: post
 title: "Hibernate及JPA注解"
 date: 2019-02-22 20:55:00 +0800
 categories: jekyll update
-tags: 技术
+tags: 技术 java
 ---
 
 ## Hibernate及JPA注解
